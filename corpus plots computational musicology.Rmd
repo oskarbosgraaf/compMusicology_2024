@@ -1,0 +1,133 @@
+---
+title: "new corpus compMusic"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: columns
+date: "2024-02-23"
+---
+```{r setup, include=FALSE}
+# knitr::opts_chunk$set(echo = TRUE)
+library(flexdashboard)
+```
+
+```{r, echo=FALSE}
+library(tidyverse)
+library(spotifyr)
+library(compmus)
+library(ggplot2)
+library(ggExtra)
+```
+
+```{r, echo=FALSE}
+df <- read_csv(
+  "Liked Songs.csv",
+  show_col_types = FALSE
+  ) %>% 
+  subset(select = -c(
+    isLocal,
+    isLikedByUser,
+    trackIsrc,
+    trackUrl,
+    artistUrl,
+    albumUrl,
+    albumUpc,
+    albumType,
+    addedBy
+    )) %>%
+  arrange(addedAt)
+
+df_stats_global <- df %>%
+  summarise(
+    mean_speechiness = mean(trackFeatureSpeechiness),
+    mean_acousticness = mean(trackFeatureAcousticness),
+    mean_liveness = mean(trackFeatureLiveness),
+    sd_speechiness = sd(trackFeatureSpeechiness),
+    sd_acousticness = sd(trackFeatureAcousticness),
+    sd_liveness = sd(trackFeatureLiveness),
+    median_speechiness = median(trackFeatureSpeechiness),
+    median_acousticness = median(trackFeatureAcousticness),
+    median_liveness = median(trackFeatureLiveness),
+    mad_speechiness = mad(trackFeatureSpeechiness),
+    mad_acousticness = mad(trackFeatureAcousticness),
+    mad_liveness = mad(trackFeatureLiveness)
+  )
+```
+
+Column{data-width=600}
+-----------------------------------------------------------
+### Chronographic visualisation
+```{r, echo=FALSE}
+plantasia <- 
+  get_tidy_audio_analysis("2XV5CUyw7gPVi18d718D4f") %>%
+  select(segments) %>%
+  unnest(segments) %>%
+  select(start, duration, pitches)
+
+plantasia %>%
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
+  compmus_gather_chroma() %>%
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+```
+
+
+Column{data-width=400}
+-----------------------------------------------------------
+```{r, echo=FALSE}
+p <- df %>%
+  ggplot(
+    aes(
+      x = addedAt,
+      y = trackFeatureTempo,
+      color = albumReleaseDate,
+      theme(legend.position="none")
+    )
+  ) + 
+  geom_point()
+
+
+```
+
+```{r, echo=FALSE}
+# ggMarginal(p, type="histogram")
+# ggMarginal(p, type="boxplot")
+```
+
+### Very nice density graph
+```{r, echo=FALSE}
+ggMarginal(p, type="density")
+```
+
+### Very cool other plot yes
+```{r, echo=FALSE}
+ggplot(df) +
+ geom_histogram(aes(
+   x = trackFeatureEnergy,
+   fill = "trackFeaturEnergy",
+   alpha = .3
+ )) + 
+ geom_histogram(aes(
+   x = trackFeatureDanceability,
+   fill = "trackFeaturDanceability",
+   alpha = .3
+ ))
+#    geom_histogram(aes(
+#      x = trackFeatureInstrumentalness,
+#      fill = "trackFeatureInstrumentalness",
+#      alpha = .3
+#    ))
+   # geom_histogram(aes(x = trackFeatureTempo, fill = "trackFeatureTempo")) + 
+ 
+   # labs(x = "")
+```
