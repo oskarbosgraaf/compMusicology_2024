@@ -2,7 +2,10 @@
 title: "new corpus compMusic"
 output:
   flexdashboard::flex_dashboard:
-    orientation: columns
+    # orientation: columns
+    storyboard: true
+    social: menu
+    source: embed
 date: "2024-02-23"
 ---
 ```{r setup, include=FALSE}
@@ -13,12 +16,8 @@ library(flexdashboard)
 ```{r, echo=FALSE}
 library(tidyverse)
 library(spotifyr)
-library(compmus)
 library(ggplot2)
-library(ggExtra)
-```
 
-```{r, echo=FALSE}
 df <- read_csv(
   "Liked Songs.csv",
   show_col_types = FALSE
@@ -53,81 +52,79 @@ df_stats_global <- df %>%
   )
 ```
 
-Column{data-width=600}
------------------------------------------------------------
-### Chronographic visualisation
-```{r, echo=FALSE}
-plantasia <- 
-  get_tidy_audio_analysis("2XV5CUyw7gPVi18d718D4f") %>%
-  select(segments) %>%
-  unnest(segments) %>%
-  select(start, duration, pitches)
+Corpus
+=======================================================================
+TODO: check for grammar
 
-plantasia %>%
-  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) %>%
-  compmus_gather_chroma() %>%
-  ggplot(
+#### Out with the old: start of a beatiful thing
+After almost twelve years of studying music from the optics of a jazz musician, you could say that this has influenced my taste in music and musical analytic capacity by a significant amount.
+Playing in a bigband twice a week and simply being around a lot of jazz started to consume my being with regards to thinking, listening and of course playing.
+After a series of unfortunate events, the members of our bigband decided to part ways and around this time I made the most important decision to start paying for a Spotify account.
+This marks the start of a --- heavily influenced by jazz --- liked playlist.
+
+#### Changes in life and music
+Two years go by and the decision is made to go on exchange and have the time of my life.
+In this period where I was supposed to be studying, I learned to appreciate going out and clubbing with a specific love for minimal techno and deep house music.
+These styles of music are repetitive and not always the most complex, which wouldn't have made my heart beat faster in the past.
+Even so, this new found appreciation for a new style of music must have changed the mean characteristics of a song present in my Spotify liked playlist by a lot.
+
+#### Analyse what you like
+Because I am aware of this shifting trend in my own music taste, I hope to see this reflected when looking at a deeper analysis of my Spotify liked playlist by using the Spotify API.
+Since an account's liked playlist is the only playlist which can not be made public, I've had to use a workaround and export my liked playlist as a csv file through a service called *Skiley*.
+I could not copy and paste my liked songs to a regular Spotify playlist and export them that way, since the *dateAdded* feature wouldn't be preserved that way, which is a most-important feature when performing an analysis over time.
+The resulting corpus exists of 1338 songs, accumulated over two and a half years of joyous listening.
+
+
+```{r, include=TRUE}
+print(summary(df))
+```
+
+
+Analysis {.storyboard}
+=======================================================================
+### temporary sandbox
+```{r, include=TRUE}
+plt <- df |>
+ggplot(
     aes(
-      x = start + duration / 2,
-      width = duration,
-      y = pitch_class,
-      fill = value
+      x = "dateAdded",
+      y = "trackFeatureTempo",
+      size = "trackFeatureEnergy",
+      # colour = mode,
+      # text = track.name
     )
   ) +
-  geom_tile() +
-  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
-  theme_minimal() +
-  scale_fill_viridis_c()
-
-```
-
-
-Column{data-width=400}
------------------------------------------------------------
-```{r, echo=FALSE}
-p <- df %>%
-  ggplot(
-    aes(
-      x = addedAt,
-      y = trackFeatureTempo,
-      color = albumReleaseDate,
-      theme(legend.position="none")
-    )
-  ) + 
   geom_point()
 
-
+plt
 ```
 
-```{r, echo=FALSE}
-# ggMarginal(p, type="histogram")
-# ggMarginal(p, type="boxplot")
-```
+***
+Lorem Ipsum
 
-### Very nice density graph
-```{r, echo=FALSE}
-ggMarginal(p, type="density")
-```
 
-### Very cool other plot yes
-```{r, echo=FALSE}
-ggplot(df) +
- geom_histogram(aes(
-   x = trackFeatureEnergy,
-   fill = "trackFeaturEnergy",
-   alpha = .3
- )) + 
- geom_histogram(aes(
-   x = trackFeatureDanceability,
-   fill = "trackFeaturDanceability",
-   alpha = .3
- ))
-#    geom_histogram(aes(
-#      x = trackFeatureInstrumentalness,
-#      fill = "trackFeatureInstrumentalness",
-#      alpha = .3
-#    ))
-   # geom_histogram(aes(x = trackFeatureTempo, fill = "trackFeatureTempo")) + 
- 
-   # labs(x = "")
-```
+### Chroma Features
+***
+TODO: write
+
+### Structure Analysis and Sef-similarity matrices
+***
+TODO: write
+
+### Key and Chord Estimation
+***
+TODO: write
+
+### Novelty Functions and Tempograms
+***
+TODO: write
+
+### Classification and Clustering
+***
+TODO: write
+
+Did I succeed?
+=======================================================================
+TODO: write
+
+In short: NO
