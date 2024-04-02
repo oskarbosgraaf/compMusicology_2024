@@ -31,44 +31,44 @@ theme_set(
     # theme(legend.position = "top")
   )
 
-# df <- read_csv(
-#   "Liked Songs.csv",
-#   show_col_types = FALSE
-#   ) %>% 
-#   subset(select = -c(
-#     isLocal,
-#     isLikedByUser,
-#     trackIsrc,
-#     trackUrl,
-#     artistUrl,
-#     albumUrl,
-#     albumUpc,
-#     albumType,
-#     addedBy
-#     )) %>%
-#   arrange(addedAt)
-# 
-# df_stats_global <- df %>%
-#   summarise(
-#     mean_speechiness = mean(trackFeatureSpeechiness),
-#     mean_acousticness = mean(trackFeatureAcousticness),
-#     mean_liveness = mean(trackFeatureLiveness),
-#     sd_speechiness = sd(trackFeatureSpeechiness),
-#     sd_acousticness = sd(trackFeatureAcousticness),
-#     sd_liveness = sd(trackFeatureLiveness),
-#     median_speechiness = median(trackFeatureSpeechiness),
-#     median_acousticness = median(trackFeatureAcousticness),
-#     median_liveness = median(trackFeatureLiveness),
-#     mad_speechiness = mad(trackFeatureSpeechiness),
-#     mad_acousticness = mad(trackFeatureAcousticness),
-#     mad_liveness = mad(trackFeatureLiveness)
-#   )
+df <- read_csv(
+ "Liked Songs.csv",
+ show_col_types = FALSE
+ ) %>% 
+ subset(select = -c(
+   isLocal,
+   isLikedByUser,
+   trackIsrc,
+   trackUrl,
+   artistUrl,
+   albumUrl,
+   albumUpc,
+   albumType,
+   addedBy
+   )) %>%
+ arrange(addedAt)
+
+df_stats_global <- df %>%
+ summarise(
+   mean_speechiness = mean(trackFeatureSpeechiness),
+   mean_acousticness = mean(trackFeatureAcousticness),
+   mean_liveness = mean(trackFeatureLiveness),
+   sd_speechiness = sd(trackFeatureSpeechiness),
+   sd_acousticness = sd(trackFeatureAcousticness),
+   sd_liveness = sd(trackFeatureLiveness),
+   median_speechiness = median(trackFeatureSpeechiness),
+   median_acousticness = median(trackFeatureAcousticness),
+   median_liveness = median(trackFeatureLiveness),
+   mad_speechiness = mad(trackFeatureSpeechiness),
+   mad_acousticness = mad(trackFeatureAcousticness),
+   mad_liveness = mad(trackFeatureLiveness)
+ )
 
 # flangestab_raw <- get_tidy_audio_analysis("0zW8R4isqSoK0NdedBnJ80")
 #   
-# flatbeat_raw <- get_tidy_audio_analysis("7GP1ZmPGH1puBliT9S6Fi5")
-#   
-# flatbeat_raw_radioedit <- get_tidy_audio_analysis("5jaVyz2GDdesyu01cBbOSc")
+flatbeat_raw <- get_tidy_audio_analysis("7GP1ZmPGH1puBliT9S6Fi5")
+   
+flatbeat_raw_radioedit <- get_tidy_audio_analysis("5jaVyz2GDdesyu01cBbOSc")
 
 fjords_raw <- get_tidy_audio_analysis("03MeuHSDwaWnwTnignD6S9")
 favorite_things_raw <- get_tidy_audio_analysis("2JIDQilIIxsxwZaS5xz8Av")
@@ -213,7 +213,7 @@ sort(colnames(df))
 # sapply(df, class)
 ```
 
-From *Rage* to *My favorite things*
+From *Rage* to *My favorite things* {.storyboard}
 =========================================
 
 ### structural differences
@@ -398,7 +398,7 @@ We do see vaguely lighter and darker squared sections, which indicate the sax, p
 When taking a look at the cepstrograms for these songs we again see a lot of variety for jazz, more distinctive c02 timbre for techno during the 'breaks' and an overwhelmingly big presence of c01, which resembles loudness, for the whole duration of *My Favorite Things*, which is probably caused by the avid use of percussion.
 
 
-### chords
+### Chordographic analysis
 
 ```{r}
 fjords <- fjords_raw |>
@@ -501,7 +501,7 @@ There is a clear break noticible at the mid-point of the track, which correspond
 Therefore we could conclude that the bass in techno has some importance in recognizing chords.
 Sadly the chordogram for *My Favorite Things* did not match any chords due to percussion overpowering any type of harmonics, and therefore I have omitted this graphic.
 
-### visualisation safe | fourrier based tempogram
+### Fourrier-based tempogram
 
 ```{r, eval=FALSE}
 fjords_plot <- fjords_raw |>
@@ -509,78 +509,49 @@ fjords_plot <- fjords_raw |>
   ggplot(aes(x = time, y = bpm, fill = power)) +
   geom_raster() +
   scale_fill_viridis_c(guide = "none") +
-  labs(x = "Time (s)", y = "Tempo (BPM)") +
-  theme_classic()
-
-fjords_plot
-
-# favorite_plot <- favorite_things_raw |>
-#   tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
-#   ggplot(aes(x = time, y = bpm, fill = power)) +
-#   geom_raster() +
-#   scale_fill_viridis_c(guide = "none") +
-#   labs(x = "Time (s)", y = "Tempo (BPM)") +
-#   theme_classic()
-# 
-# rage_plot <- rage_raw |>
-#   tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
-#   ggplot(aes(x = time, y = bpm, fill = power)) +
-#   geom_raster() +
-#   scale_fill_viridis_c(guide = "none") +
-#   labs(x = "Time (s)", y = "Tempo (BPM)") +
-#   theme_classic()
-# 
-# figure <- ggarrange(fjords_plot, favorite_plot, rage_plot,
-#                     common.legend = TRUE,
-#                     ncol = 2, nrow = 1)
-# annotate_figure(figure,
-#                top = text_grob("Fourrier based Tempogram", color = "red", face = "bold", size = 14),
-#                left = text_grob("BPM", color = "black", rot = 90),
-#                bottom = text_grob("Time (s)", color = "black", size=10)
-#                # fig.lab = "Figure 1", fig.lab.face = "bold"
-# )
-```
-
-
-### visualisation safe \| flatbeat cepstogram
-
-```{r, eval=FALSE}
-flatbeat <- flatbeat_raw |>
-  compmus_align(bars, segments) |>                     # Change `bars`
-  select(bars) |>                                      #   in all three
-  unnest(bars) |>                                      #   of these lines.
-  mutate(
-    pitches =
-      map(segments,
-        compmus_summarise, pitches,
-        method = "rms", norm = "euclidean"              # Change summary & norm.
-      )
-  ) |>
-  mutate(
-    timbre =
-      map(segments,
-        compmus_summarise, timbre,
-        method = "rms", norm = "euclidean"              # Change summary & norm.
-      )
-  )
-
-flatbeat |>
-  compmus_gather_timbre() |>
-  ggplot(
-    aes(
-      x = start + duration / 2,
-      width = duration,
-      y = basis,
-      fill = value
-    )
-  ) +
-  geom_tile() +
-  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
-  scale_fill_viridis_c() +                              
+  labs(title = "Fjords", x = NULL, y = NULL) +
   theme_classic()
 ```
+```{r}
+favorite_plot <- favorite_things_raw |>
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(title = "My Favorite Things", x = NULL, y = NULL) +
+  theme_classic()
 
-### Visualisation safe \| Dynamic Time Warping
+```
+```{r}
+rage_plot <- rage_raw |>
+  tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
+  ggplot(aes(x = time, y = bpm, fill = power)) +
+  geom_raster() +
+  scale_fill_viridis_c(guide = "none") +
+  labs(title = "Rage", x = NULL, y = NULL) +
+  theme_classic()
+
+```
+```{r}
+figure <- ggarrange(fjords_plot, favorite_plot, rage_plot,
+                    common.legend = TRUE,
+                    ncol = 2, nrow = 2)
+annotate_figure(figure,
+                top = text_grob("Fourrier based Tempogram", color = "red", face = "bold", size = 14),
+                left = text_grob("BPM", color = "black", rot = 90),
+                bottom = text_grob("Time (s)", color = "black", size=10)
+                # fig.lab = "Figure 1", fig.lab.face = "bold"
+)
+```
+
+***
+When interpreting the tempograms for *Fjords*, *My Favorite Things* and *Rage*, we notice steady BPM for the latter two and a lot of variation for the jazz piece.
+This points to a wider spectrum of temporal freedom in jazz, which is of course also credited towards the fact that this recording is done in one go without a metronome present.
+In this recording of *Fjords*, all musicians react in real time to each others play and therefore we see a larger variance in BPM.
+Good to note is the fact that *Rage* is presumed to be produced in an electronic setting, where tempo is strictly static and music is not played live.
+
+
+### Dynamic Time Warping
 
 ```{r, eval=FALSE}
 flatbeat_original <- flatbeat_raw |>
@@ -610,7 +581,7 @@ compmus_long_distance(
  ) +
  geom_tile() +
  coord_equal() +
- labs(x = "Flat beat -- Mr. Oizo", y = "Flat beat, radio edit -- Mr. Oizo") +
+ labs(title="Dynamic timewarping for *Flat Beat* by Mr. Oizo", x = "Original - Time (s)", y = "Radio edit - Time (s)") +
  theme_minimal() +
  scale_fill_viridis_c(guide = NULL)
 
@@ -618,13 +589,94 @@ compmus_long_distance(
 
 
 ***
+In our whole corpus are no covers of the same song present, except for these two different versions of *Flat Beat* by Mr. Oizo.
+The original and the radio edit are incredibly similar in terms of length, but there does exist a difference in song structure, namely the lack of a long intro in the radio edit.
+This is just a shortened version of the original intro though, and the rest of both songs match up in terms of structure and tempo.
 
-flat beat original <spotify:track:7GP1ZmPGH1puBliT9S6Fi5> radio edit <spotify:track:5jaVyz2GDdesyu01cBbOSc>
-
-
-### Visualisation safe \| Chromagrams
+### Chroma Features
 
 ```{r, eval=FALSE}
+fjords <- fjords_raw |>
+  select(segments) |>
+  unnest(segments) |>
+  select(start, duration, pitches)
+
+fjords_plot <- fjords |>
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
+  compmus_gather_chroma() |> 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(title = "Fjords", x = NULL, y = NULL, fill = NULL) +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+favorite_things <- favorite_things_raw |>
+  select(segments) |>
+  unnest(segments) |>
+  select(start, duration, pitches)
+
+favorite_plot <- favorite_things |>
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
+  compmus_gather_chroma() |> 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(title = "My Favorite Things", x = NULL, y = NULL, fill = NULL) +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+rage <- rage_raw |>
+  select(segments) |>
+  unnest(segments) |>
+  select(start, duration, pitches)
+
+rage_plot <- rage |>
+  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
+  compmus_gather_chroma() |> 
+  ggplot(
+    aes(
+      x = start + duration / 2,
+      width = duration,
+      y = pitch_class,
+      fill = value
+    )
+  ) +
+  geom_tile() +
+  labs(title = "Rage", x = NULL, y = NULL, fill = NULL) +
+  theme_minimal() +
+  scale_fill_viridis_c()
+
+figure <- ggarrange(fjords_plot, favorite_plot, rage_plot,
+                    common.legend = TRUE,
+                    ncol = 2, nrow = 2)
+annotate_figure(figure,
+                top = text_grob("Euclidean Chromagram", color = "red", face = "bold", size = 14),
+                left = text_grob("frequence", color = "black", rot = 90),
+                bottom = text_grob("Time (s)", color = "black", size=10)
+                # fig.lab = "Figure 1", fig.lab.face = "bold"
+)
+```
+
+***
+The chromagrams for these three tracks indicate the same trend as analyses in previous tabs:
+When moving further on the spectrum from jazz to techno, we lose complexity, but gain distinct sections of repetition.
+
+### The whole corpus in tempo
+
+```{r}
 plt <- df |>
 ggplot(
    aes(
@@ -645,66 +697,14 @@ plt
 
 ***
 
-TODO: write about the changes over time in tempo and such TODO: make plot pretty
+TODO: write about the changes over time in tempo and such
 
-Analysis {.storyboard}
-=========================================
+```
+How wrong were my assumptions?
+When looking back at this analysis of jazz, techno and *the in between*, I noticed a couple of trends which largely correspond to initial assumptions.
 
-### Chroma Features
+*Fjords* was more complex in almost all analyses, where complexity 
 
-```{r, eval=FALSE}
-flangestab <- flangestab_raw |>
-  select(segments) |>
-  unnest(segments) |>
-  select(start, duration, pitches)
-
-flangestab |>
-  mutate(pitches = map(pitches, compmus_normalise, "euclidean")) |>
-  compmus_gather_chroma() |> 
-  ggplot(
-    aes(
-      x = start + duration / 2,
-      width = duration,
-      y = pitch_class,
-      fill = value
-    )
-  ) +
-  geom_tile() +
-  labs(x = "Time (s)", y = NULL, fill = "Magnitude") +
-  theme_minimal() +
-  scale_fill_viridis_c()
 ```
 
-***
 
-TODO: write 
-song: <spotify:track:0zW8R4isqSoK0NdedBnJ80>
-flangestab by ceephax acid crew
-
-### Structure Analysis and Sef-similarity matrices
-
-***
-
-TODO: write
-
-### Key and Chord Estimation
-
-***
-
-TODO: write
-
-### Novelty Functions and Tempograms
-
-***
-
-TODO: write
-
-### Classification and Clustering
-
-***
-
-TODO: write
-
-# How wrong were my assumptions?
-
-TODO: write In short: completely wrong probs
