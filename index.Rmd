@@ -527,7 +527,7 @@ Sadly the chordogram for *My Favorite Things* did not match any chords due to pe
 
 ### Fourrier-based tempogram
 
-```{r, eval=FALSE}
+```{r}
 fjords_plot <- fjords_raw |>
   tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
   ggplot(aes(x = time, y = bpm, fill = power)) +
