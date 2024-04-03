@@ -1,5 +1,5 @@
 ---
-title: "new corpus compMusic"
+title: "Computational Musicology 2024"
 output:
   flexdashboard::flex_dashboard:
     # orientation: columns
@@ -180,8 +180,6 @@ key_templates <-
 Corpus
 =========================================
 
-TODO: check for grammar
-
 #### Out with the old: start of a beatiful thing
 
 After almost twelve years of studying music from the optics of a jazz musician, you could say that this has influenced my taste in music and musical analytic capacity by a significant amount.
@@ -215,6 +213,33 @@ sort(colnames(df))
 
 From *Rage* to *My favorite things* {.storyboard}
 =========================================
+
+### The whole corpus in tempo
+
+```{r}
+plt <- df |>
+ggplot(
+   aes(
+     x = addedAt,
+     y = trackFeatureTempo,
+     color = trackFeatureDanceability,
+   )
+) +
+scale_colour_continuous(guide = "none") +
+labs(title="Track tempo over time in liked playlist\nperiod of exchange marked in red", x = "Date track added to playlist", y = "Track tempo in bpm", ) +
+geom_point(size = 1) + 
+geom_smooth(method = "gam") +
+geom_vline(xintercept=as.numeric(df$addedAt[295]), color="red", linetype=4) +
+geom_vline(xintercept=as.numeric(df$addedAt[635]), color="red", linetype=4)
+
+plt
+```
+
+***
+
+When looking at a tempo analysis of all songs present in this corpus, we see a fairly even distribution where the mean track tempo lies around 125 BPM.
+In between the two red vertical lines, which depict my time abroad and my newfound love for going clubbing, we see a slight peak the BPM trend, which could mean that my taste in music around that time had slightly been catered toward various forms of danceable, electronic music.
+We continue with further analysis between individual tracks in the following boards.
 
 ### structural differences
 
@@ -488,7 +513,6 @@ annotate_figure(figure,
                bottom = text_grob("Time (s)", color = "black", size=10)
                # fig.lab = "Figure 1", fig.lab.face = "bold"
 )
-# figure
 ```
 
 ***
@@ -553,7 +577,7 @@ Good to note is the fact that *Rage* is presumed to be produced in an electronic
 
 ### Dynamic Time Warping
 
-```{r, eval=FALSE}
+```{r}
 flatbeat_original <- flatbeat_raw |>
  select(segments) |>
  unnest(segments) |>
@@ -595,7 +619,7 @@ This is just a shortened version of the original intro though, and the rest of b
 
 ### Chroma Features
 
-```{r, eval=FALSE}
+```{r}
 fjords <- fjords_raw |>
   select(segments) |>
   unnest(segments) |>
@@ -673,31 +697,6 @@ annotate_figure(figure,
 ***
 The chromagrams for these three tracks indicate the same trend as analyses in previous tabs:
 When moving further on the spectrum from jazz to techno, we lose complexity, but gain distinct sections of repetition.
-
-### The whole corpus in tempo
-
-```{r}
-plt <- df |>
-ggplot(
-   aes(
-     x = addedAt,
-     y = trackFeatureTempo,
-     color = trackFeatureDanceability,
-   )
-) +
-scale_colour_continuous(guide = "none") +
-labs(title="Track tempo over time in liked playlist\nperiod of exchange marked in red", x = "Date track added to playlist", y = "Track tempo in bpm", ) +
-geom_point(size = 1) + 
-geom_smooth(method = "gam") +
-geom_vline(xintercept=as.numeric(df$addedAt[295]), color="red", linetype=4) +
-geom_vline(xintercept=as.numeric(df$addedAt[635]), color="red", linetype=4)
-
-plt
-```
-
-***
-
-TODO: write about the changes over time in tempo and such
 
 ```
 How wrong were my assumptions?
