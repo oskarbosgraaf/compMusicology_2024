@@ -6,18 +6,24 @@ output:
     storyboard: true
     social: menu
     source: embed
+    theme:
+      version: 4
+      bg: "#101010"
+      fg: "#FDF7F7" 
+      primary: "#3adac6"
+      navbar-bg: "#3ADAC6"
 date: "2024-02-23"
 # editor_options: 
 #   markdown: 
 #     wrap: sentence
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=TRUE}
 # knitr::opts_chunk$set(echo = TRUE)
 library(flexdashboard)
 ```
 
-```{r, echo=FALSE}
+```{r include=TRUE}
 library(tidyverse)
 library(spotifyr)
 library(ggplot2)
@@ -197,7 +203,7 @@ Even so, this new found appreciation for a new style of music must have changed 
 #### Analyse what you like
 
 Because I am aware of this shifting trend in my own music taste, I hope to see this reflected when looking at a deeper analysis of my Spotify liked playlist by using the Spotify API. Since an account's liked playlist is the only playlist which can not be made public, I've had to use a workaround and export my liked playlist as a csv file through a service called *Skiley*.
-I could not copy and paste my liked songs to a regular Spotify playlist and export them that way, since the *dateAdded* feature wouldn't be preserved that way, which is a most-important feature when performing an analysis over time.
+I could not copy and paste my liked songs to a regular Spotify playlist and export them that way, since the *dateAdded* feature wouldn't be preserved that way, which is a most-important feature when performing analysis over time.
 The resulting corpus exists of 1338 songs, accumulated over two and a half years of joyous listening.
 Next to corpus wide analysis, we'll also look at three track-specific analyses.
 *Fjords* by Peter Guidi is a slow jazz balad with complex melodies and a lead played by the saxophone.
@@ -205,10 +211,19 @@ Secondly, I'll take a look at *Rage* by DBBD, which is a fast-paced trance song,
 It contains monotonous melody and chord progression, an elevated bpm and should be distincly different to *Fjords* when analysing these features.
 Lastly I thought it'd be good to include as close to an intermediate between these two genres, as possible, so I've include *My favorite things* by Outkast, which is a cover of the jazz classic written by Richard Rodgers and famously played by John Coltrane and is in this case played in a style which resembles something closer to jungle and techno.
 
+#### Assumptions of our corpus
+
+When looking at someone's liked playlist, we assume some form of an overarching coherence in musical genre and style, since the fact that a song is liked by this individual stems not only from a song being "good", but also some form of personal preference.
+This means that this person appreciates certain aspects of music more than others and these parts should be present in the majority of songs in their liked playlist.
+Sadly I also assume the essence of why someone likes something to be too complex to distinctly find in the upcoming analysis of our corpus, even though I do presume it to be present.
+Furthermore I expect the features of this corpus to be largely non-coherent, due to the impulsive approach when choosing to add a newly found song to the liked playlist.
+
+In the genre comparison between jazz and techno I assume to see vivid differences in most/all features and analyses, since these genres lie far apart in meanings of the word.
+The cover of a jazz classic *My favorite thing* by Outkast though, will probably share similarity with both chosen jazz and techno songs, since for example the melody and complexity of a jazz standard is used with the production methods of electronic music, which would mean a similar timbre footprint as *Rage* by DBBD.
+
 
 ```{r, include=FALSE}
 sort(colnames(df))
-# sapply(df, class)
 ```
 
 From *Rage* to *My favorite things* {.storyboard}
@@ -216,7 +231,7 @@ From *Rage* to *My favorite things* {.storyboard}
 
 ### The whole corpus in tempo
 
-```{r}
+```{r include=TRUE}
 plt <- df |>
 ggplot(
    aes(
@@ -243,7 +258,7 @@ We continue with further analysis between individual tracks in the following boa
 
 ### structural differences
 
-```{r}
+```{r include=TRUE}
 rage <- rage_raw |>
   compmus_align(bars, segments) |>                     # Change `bars`
   select(bars) |>                                      #   in all three
@@ -420,12 +435,12 @@ We do see vaguely lighter and darker squared sections, which indicate the sax, p
 
 ***
 
-When taking a look at the cepstrograms for these songs we again see a lot of variety for jazz, more distinctive c02 timbre for techno during the 'breaks' and an overwhelmingly big presence of c01, which resembles loudness, for the whole duration of *My Favorite Things*, which is probably caused by the avid use of percussion.
+When taking a look at the cepstrograms of timbre for these songs we again see a lot of variety for jazz, more distinctive c02 timbre for techno during the 'breaks' and an overwhelmingly big presence of c01, which resembles loudness, for the whole duration of *My Favorite Things*, which is probably caused by the avid use of percussion.
 
 
 ### Chordographic analysis
 
-```{r}
+```{r include=TRUE}
 fjords <- fjords_raw |>
 compmus_align(sections, segments) |>
   select(sections) |>
@@ -527,7 +542,7 @@ Sadly the chordogram for *My Favorite Things* did not match any chords due to pe
 
 ### Fourrier-based tempogram
 
-```{r}
+```{r include=TRUE}
 fjords_plot <- fjords_raw |>
   tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
   ggplot(aes(x = time, y = bpm, fill = power)) +
@@ -536,7 +551,7 @@ fjords_plot <- fjords_raw |>
   labs(title = "Fjords", x = NULL, y = NULL) +
   theme_classic()
 ```
-```{r}
+```{r include=TRUE}
 favorite_plot <- favorite_things_raw |>
   tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
   ggplot(aes(x = time, y = bpm, fill = power)) +
@@ -546,7 +561,7 @@ favorite_plot <- favorite_things_raw |>
   theme_classic()
 
 ```
-```{r}
+```{r include=TRUE}
 rage_plot <- rage_raw |>
   tempogram(window_size = 8, hop_size = 1, cyclic = TRUE) |>
   ggplot(aes(x = time, y = bpm, fill = power)) +
@@ -556,7 +571,7 @@ rage_plot <- rage_raw |>
   theme_classic()
 
 ```
-```{r}
+```{r include=TRUE}
 figure <- ggarrange(fjords_plot, favorite_plot, rage_plot,
                     common.legend = TRUE,
                     ncol = 2, nrow = 2)
@@ -572,54 +587,12 @@ annotate_figure(figure,
 When interpreting the tempograms for *Fjords*, *My Favorite Things* and *Rage*, we notice steady BPM for the latter two and a lot of variation for the jazz piece.
 This points to a wider spectrum of temporal freedom in jazz, which is of course also credited towards the fact that this recording is done in one go without a metronome present.
 In this recording of *Fjords*, all musicians react in real time to each others play and therefore we see a larger variance in BPM.
-Good to note is the fact that *Rage* is presumed to be produced in an electronic setting, where tempo is strictly static and music is not played live.
+Good to note is the fact that both *Rage* and *My Favorite Things* are presumed to be produced in an electronic setting, where tempo is strictly static and music is not played live.
 
-
-### Dynamic Time Warping
-
-```{r}
-flatbeat_original <- flatbeat_raw |>
- select(segments) |>
- unnest(segments) |>
- select(start, duration, pitches)
-  
-flatbeat_radioedit <- flatbeat_raw_radioedit |>
- select(segments) |>
- unnest(segments) |>
- select(start, duration, pitches)
-
-compmus_long_distance(
- flatbeat_original |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
- flatbeat_radioedit |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
- feature = pitches,
- method = "euclidean"
-) |>
- ggplot(
-   aes(
-     x = xstart + xduration / 2,
-     width = xduration,
-     y = ystart + yduration / 2,
-     height = yduration,
-     fill = d
-   )
- ) +
- geom_tile() +
- coord_equal() +
- labs(title="Dynamic timewarping for *Flat Beat* by Mr. Oizo", x = "Original - Time (s)", y = "Radio edit - Time (s)") +
- theme_minimal() +
- scale_fill_viridis_c(guide = NULL)
-
-```
-
-
-***
-In our whole corpus are no covers of the same song present, except for these two different versions of *Flat Beat* by Mr. Oizo.
-The original and the radio edit are incredibly similar in terms of length, but there does exist a difference in song structure, namely the lack of a long intro in the radio edit.
-This is just a shortened version of the original intro though, and the rest of both songs match up in terms of structure and tempo.
 
 ### Chroma Features
 
-```{r}
+```{r include=TRUE}
 fjords <- fjords_raw |>
   select(segments) |>
   unnest(segments) |>
@@ -698,12 +671,138 @@ annotate_figure(figure,
 The chromagrams for these three tracks indicate the same trend as analyses in previous tabs:
 When moving further on the spectrum from jazz to techno, we lose complexity, but gain distinct sections of repetition.
 
-```
+
+
+
 How wrong were my assumptions?
-When looking back at this analysis of jazz, techno and *the in between*, I noticed a couple of trends which largely correspond to initial assumptions.
+=========================================
 
-*Fjords* was more complex in almost all analyses, where complexity 
+When looking back at this analysis of jazz, techno and *the in between*, we saw results which mostly correspond to our initial assumptions.
+
+We indeed saw a slight uptick in the average trend of tempo in the period I started going clubbing more.
+This uptick did not persist in my newly added music though and this peak was smaller than expected.
+
+*Fjords* and *Rage* were indeed distinctly different in for example structure, where the latter had clearer subsections, which repeat multiple times and the former seems to be more organically structured.
+Similar distinct differences can be seen in the euclidean chromagram, where *Fjords*'s chroma schema looks more chaotic and or organic, and *Rage*'s frequency data looks structured well, with repeated sections.
+
+We also saw that *My favorite things* indeed loaned characteristics from both jazz and techno and thus shared similarities with both.
+An example of this would be it's similarity to *Fjords* in terms of chroma structure, where it looks decently chaotic and nonsynthetic and it's similarity to *Rage* in terms of tempogram, where we clearly see undiversified, studio-made bpm.
+However, this song does not only steal from the genres it lies in between of:
+when taking a look at the timbre-based structure analysis, barely any likeness can be found with the other two songs.
+This conveys it's own distinctive style in terms of 'sound'.
+
+In this short analysis of my liked playlist over the years, some of our assumptions were proven to be true.
+The overarching conclusion to be draw though, is that music is too complex to be explained in a short dashboard and the soothing thought that the wonders of music will always be attributed to some form of organicness which cannot be completely analysed in a qualitative or quantitative manner.
+This being said, I hope some forms of insight could be gained by this short analysis of jazz, techno and the in between.
+
+
+Appendix of some sort {.storyboard}
+=========================================
+
+### Clustering jazz versus techno
+
+```{r include=TRUE}
+jazz_techno <-
+  get_playlist_audio_features("bnfcollection", "3rI5g4LPTo6KoiWHRd0ru9") |>
+  add_audio_analysis() |>
+  mutate(
+    segments = map2(segments, key, compmus_c_transpose),
+    pitches =
+      map(segments,
+        compmus_summarise, pitches,
+        method = "mean", norm = "manhattan"
+      ),
+    timbre =
+      map(
+        segments,
+        compmus_summarise, timbre,
+        method = "mean"
+      )
+  ) |>
+  mutate(pitches = map(pitches, compmus_normalise, "clr")) |>
+  mutate_at(vars(pitches, timbre), map, bind_rows) |>
+  unnest(cols = c(pitches, timbre))
+
+
+jazz_techno_juice <-
+  recipe(
+    track.name ~
+      danceability +
+      energy +
+      loudness +
+      speechiness +
+      acousticness +
+      instrumentalness +
+      liveness +
+      valence +
+      tempo +
+      duration +
+      C + `C#|Db` + D + `D#|Eb` +
+      E + `F` + `F#|Gb` + G +
+      `G#|Ab` + A + `A#|Bb` + B +
+      c01 + c02 + c03 + c04 + c05 + c06 +
+      c07 + c08 + c09 + c10 + c11 + c12,
+    data = jazz_techno
+  ) |>
+  step_center(all_predictors()) |>
+  step_scale(all_predictors()) |> 
+  # step_range(all_predictors()) |> 
+  prep(jazz_techno |> mutate(track.name = str_trunc(track.name, 20))) |>
+  juice() |>
+  column_to_rownames("track.name")
+
+jazz_techno_dist <- dist(jazz_techno_juice, method = "euclidean")
+
+jazz_techno_dist |> 
+  hclust(method = "complete") |> # Try single, average, and complete.
+  dendro_data() |>
+  ggdendrogram()
+```
+
+***
+In this Hierarchical clustering graph, based on euclidean distance, the top-five most listened songs by Outkast, Peter Guidi and DBBD (miss bashfull) are compared and grouped.
+If we look at three clusters, only Muschi Musch and Hard Being Hot (DBBD) are clustered together for DBBD's songs, with the rest of their songs added to a the right-most cluster, also containing all Outkast's top five songs.
+All classic jazz pieces are similar enough to be clustered together, but noteworthy is the suprisingly small distance between DBBD and Outkast's music.
+
+
+### Dynamic Time Warping
+
+```{r include=TRUE}
+flatbeat_original <- flatbeat_raw |>
+ select(segments) |>
+ unnest(segments) |>
+ select(start, duration, pitches)
+  
+flatbeat_radioedit <- flatbeat_raw_radioedit |>
+ select(segments) |>
+ unnest(segments) |>
+ select(start, duration, pitches)
+
+compmus_long_distance(
+ flatbeat_original |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
+ flatbeat_radioedit |> mutate(pitches = map(pitches, compmus_normalise, "chebyshev")),
+ feature = pitches,
+ method = "euclidean"
+) |>
+ ggplot(
+   aes(
+     x = xstart + xduration / 2,
+     width = xduration,
+     y = ystart + yduration / 2,
+     height = yduration,
+     fill = d
+   )
+ ) +
+ geom_tile() +
+ coord_equal() +
+ labs(title="Dynamic timewarping for *Flat Beat* by Mr. Oizo", x = "Original - Time (s)", y = "Radio edit - Time (s)") +
+ theme_minimal() +
+ scale_fill_viridis_c(guide = NULL)
 
 ```
 
 
+***
+In our whole corpus are no covers of the same song present, except for these two different versions of *Flat Beat* by Mr. Oizo.
+The original and the radio edit are incredibly similar in terms of length, but there does exist a difference in song structure, namely the lack of a long intro in the radio edit.
+This is just a shortened version of the original intro though, and the rest of both songs match up in terms of structure and tempo.
